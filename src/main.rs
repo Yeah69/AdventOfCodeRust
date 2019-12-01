@@ -5,7 +5,7 @@ fn main() {
 }
 
 fn day_1() {
-    let contents = fs::read_to_string("E:\\GitReps\\AdventOfCodeRust\\Input\\2019\\Day01.txt")
+    let contents = fs::read_to_string(".\\Input\\2019\\Day01.txt")
         .expect("Something went wrong reading the file");
     let result_1 : i32 = contents
         .lines()
