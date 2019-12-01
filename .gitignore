@@ -1,0 +1,5 @@
+/target
+**/*.rs.bk
+
+/.idea
+/Input/2019/*.txt
