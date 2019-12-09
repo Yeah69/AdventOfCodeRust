@@ -1,9 +1,9 @@
 mod days;
+mod day_tasks;
+use day_tasks::DayTasks;
 
 fn main() {
-    fn run (runnable: impl days::day_tasks::DayTasks){
-        runnable.run();
-    }
-    run(days::day_01::Day01);
-    run(days::day_02::Day02);
+    days::day_01::Day01.run();
+    days::day_02::Day02.run();
+    days::day_03::Day03.run();
 }

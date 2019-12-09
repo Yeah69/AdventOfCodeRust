@@ -1,4 +1,4 @@
-use super::day_tasks;
+use crate::day_tasks;
 
 pub struct Day01;
 
