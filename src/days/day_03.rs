@@ -7,8 +7,7 @@ use std::iter;
 
 pub struct Day03;
 
-#[derive(Eq, PartialEq)]
-#[derive(Hash)]
+#[derive(Eq, PartialEq,Hash)]
 enum Direction {
     Up,
     Down,
@@ -22,10 +21,10 @@ struct Instruction {
 }
 
 impl day_tasks::DayTasks for Day03 {
-    fn day_number (self: &Self) -> String {
+    fn day_number (&self) -> String {
         "03".to_string()
     }
-    fn task_0 (self: &Self, input: &String) -> String {
+    fn task_0 (&self, input: &String) -> String {
         let (points_0, points_1) = get_paths(input);
         let hash_set_0: HashSet<(i32, i32)> = points_0.into_iter().collect();
         let hash_set_1: HashSet<(i32, i32)> = points_1.into_iter().collect();
@@ -37,7 +36,7 @@ impl day_tasks::DayTasks for Day03 {
             .map(|i| i.to_string())
             .unwrap_or("- No points that match -".to_string())
     }
-    fn task_1 (self: &Self, input: &String) -> String {
+    fn task_1 (&self, input: &String) -> String {
         let (points_0, points_1) = get_paths(input);
         let hash_set_0: HashSet<(i32, i32)> = points_0.clone().into_iter().collect();
         let hash_set_1: HashSet<(i32, i32)> = points_1.clone().into_iter().collect();
