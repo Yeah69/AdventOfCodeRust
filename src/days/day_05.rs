@@ -4,14 +4,14 @@ use super::int_code;
 pub struct Day05;
 
 impl day_tasks::DayTasks for Day05 {
-    fn day_number (self: &Self) -> String {
+    fn day_number (&self) -> String {
         "05".to_string()
     }
-    fn task_0 (self: &Self, input: &String) -> String {
+    fn task_0 (&self, input: &String) -> String {
         let numbers = int_code::parse_into_int_code(input);
         iteration(&numbers, 1).map(|i| i.to_string()).unwrap_or("- Something went wrong -".to_string())
     }
-    fn task_1 (self: &Self, input: &String) -> String {
+    fn task_1 (&self, input: &String) -> String {
         let numbers = int_code::parse_into_int_code(input);
         iteration(&numbers, 5).map(|i| i.to_string()).unwrap_or("- Something went wrong -".to_string())
     }

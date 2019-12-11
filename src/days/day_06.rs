@@ -7,13 +7,13 @@ use itertools::Itertools;
 pub struct Day06;
 
 impl day_tasks::DayTasks for Day06 {
-    fn day_number (self: &Self) -> String {
+    fn day_number (&self) -> String {
         "06".to_string()
     }
-    fn task_0 (self: &Self, input: &String) -> String {
+    fn task_0 (&self, input: &String) -> String {
         count_connections(&generate_adjacency_map(input), "COM".to_string()).1.to_string()
     }
-    fn task_1 (self: &Self, input: &String) -> String {
+    fn task_1 (&self, input: &String) -> String {
         match determine_orbital_transfers_to_santa(&generate_adjacency_map(input), "COM".to_string()) {
             (Some(you), Some(santa)) => (you + santa).to_string(),
             _ => "- Something went wrong -".to_string()

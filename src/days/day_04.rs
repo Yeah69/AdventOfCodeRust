@@ -6,16 +6,16 @@ use std::ops::RangeInclusive;
 pub struct Day04;
 
 impl day_tasks::DayTasks for Day04 {
-    fn day_number (self: &Self) -> String {
+    fn day_number (&self) -> String {
         "04".to_string()
     }
-    fn task_0 (self: &Self, input: &String) -> String {
+    fn task_0 (&self, input: &String) -> String {
         fn adjacency_criterion (s_0: char, s_1: char, s_2: char, s_3: char, s_4: char, s_5: char) -> bool {
             s_0 == s_1 || s_1 == s_2 || s_2 == s_3 || s_3 == s_4 || s_4 == s_5
         }
         task_impl(input, &adjacency_criterion)
     }
-    fn task_1 (self: &Self, input: &String) -> String {
+    fn task_1 (&self, input: &String) -> String {
         fn adjacency_criterion (s_0: char, s_1: char, s_2: char, s_3: char, s_4: char, s_5: char) -> bool {
             s_0 == s_1 && s_1 != s_2 
             || s_1 == s_2 && s_0 != s_1 && s_2 != s_3 

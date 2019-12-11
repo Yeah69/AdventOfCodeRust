@@ -2,11 +2,11 @@ use std::fs;
 use std::time::Instant;
 
 pub trait DayTasks {
-    fn day_number (self: &Self) -> String;
-    fn task_0 (self: &Self, input: &String) -> String;
-    fn task_1 (self: &Self, input: &String) -> String;
+    fn day_number (&self) -> String;
+    fn task_0 (&self, input: &String) -> String;
+    fn task_1 (&self, input: &String) -> String;
 
-    fn run (self: &Self) {
+    fn run (&self) {
         let path = format! (".\\Input\\2019\\{}.txt", self.day_number());
         let contents = fs::read_to_string(path)
             .expect("Something went wrong reading the input file");

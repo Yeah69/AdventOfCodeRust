@@ -3,17 +3,17 @@ use crate::day_tasks;
 pub struct Day01;
 
 impl day_tasks::DayTasks for Day01 {
-    fn day_number (self: &Self) -> String {
+    fn day_number (&self) -> String {
         "01".to_string()
     }
-    fn task_0 (self: &Self, input: &String) -> String {
+    fn task_0 (&self, input: &String) -> String {
         let result: i32 = input
             .lines()
             .map(|line| fuel_calculation(line.parse::<i32>().unwrap()))
             .sum();
         result.to_string()
     }
-    fn task_1 (self: &Self, input: &String) -> String {
+    fn task_1 (&self, input: &String) -> String {
         let result : i32 = 
         input
             .lines()

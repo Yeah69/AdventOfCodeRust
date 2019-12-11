@@ -4,14 +4,14 @@ use super::int_code;
 pub struct Day02;
 
 impl day_tasks::DayTasks for Day02 {
-    fn day_number (self: &Self) -> String {
+    fn day_number (&self) -> String {
         "02".to_string()
     }
-    fn task_0 (self: &Self, input: &String) -> String {
+    fn task_0 (&self, input: &String) -> String {
         let numbers = int_code::parse_into_int_code(input);
         iteration(&numbers, 12, 2).to_string()
     }
-    fn task_1 (self: &Self, input: &String) -> String {
+    fn task_1 (&self, input: &String) -> String {
         let numbers = int_code::parse_into_int_code(input);
         let (noun, verb) = find_output(&numbers, 19690720);
         let result = 100 * noun + verb;
