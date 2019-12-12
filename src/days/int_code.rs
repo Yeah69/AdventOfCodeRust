@@ -2,7 +2,7 @@ pub fn parse_into_int_code (input: &String) -> Vec<i32>{
     input.split(',').map(|text_number| text_number.parse::<i32>().unwrap()).collect()
 }
 
-pub fn step (state: &mut Vec<i32>, program_counter: i32, input: i32) -> (i32, Option<i32>)  {
+pub fn step (state: &mut Vec<i32>, program_counter: i32, input: i32) -> (i32, Option<i32>, bool) /*(program_counter, output, is_input_consumed)*/  {
     let program_counter_usize = program_counter as usize;
     let full_op_code = state[program_counter_usize];
     let op_code = full_op_code % 100;
@@ -19,8 +19,8 @@ pub fn step (state: &mut Vec<i32>, program_counter: i32, input: i32) -> (i32, Op
 
             match op_code {
                 5 | 6 => {
-                    if op_code == 5 && operator_0 != 0 || op_code == 6 && operator_0 == 0 { (operator_1, None) } 
-                    else { ((program_counter + 3) as i32, None)}
+                    if op_code == 5 && operator_0 != 0 || op_code == 6 && operator_0 == 0 { (operator_1, None, false) } 
+                    else { ((program_counter + 3) as i32, None, false)}
                 }
                 _ => {
                     let target_index = state[program_counter_usize + 3];
@@ -32,14 +32,14 @@ pub fn step (state: &mut Vec<i32>, program_counter: i32, input: i32) -> (i32, Op
                     };
                     state[target_index as usize] = result;
             
-                    ((program_counter + 4) as i32, None)}
+                    ((program_counter + 4) as i32, None, false)}
             }
         }
         3 => {
             let target_index = state[program_counter_usize + 1];
             state[target_index as usize] = input;
 
-            ((program_counter + 2) as i32, None)
+            ((program_counter + 2) as i32, None, true)
         }
         4 => {
             let position_mode_0 = (full_op_code /    100) % 10 == 0;
@@ -47,8 +47,8 @@ pub fn step (state: &mut Vec<i32>, program_counter: i32, input: i32) -> (i32, Op
             let operator_0 = state[program_counter_usize + 1];
             let operator_0 = if position_mode_0 { state[operator_0 as usize] } else { operator_0 };
             
-            ((program_counter + 2) as i32, Some(operator_0))
+            ((program_counter + 2) as i32, Some(operator_0), false)
         }
-        _ => (-1, None)
+        _ => (-1, None, false)
     }
 }

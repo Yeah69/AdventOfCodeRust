@@ -22,7 +22,7 @@ fn iteration(initial_state: &Vec<i32>, input: i32) -> Option<i32> {
     let mut last_output: Option<i32> = None;
     let mut current_index: i32 = 0;
     while current_index != -1 && (current_index as usize) < numbers.len() {
-        let (next_index, output_maybe) = int_code::step(&mut numbers, current_index, input);
+        let (next_index, output_maybe, _) = int_code::step(&mut numbers, current_index, input);
         current_index = next_index;
         last_output = output_maybe.or(last_output);
     }
