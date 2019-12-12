@@ -76,7 +76,6 @@ fn iteration_1_1(program: &mut Vec<i32>, input: i32, program_counter: &mut i32, 
         inner_last_output = output_maybe;
         *last_output = output_maybe.or(*last_output);
     }
-    if *program_counter == -1 { println!("Halted!")}
     *last_output
 }
 
