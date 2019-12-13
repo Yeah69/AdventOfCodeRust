@@ -19,7 +19,7 @@ impl day_tasks::DayTasks for Day02 {
     }
 }
 
-fn find_output (initial_state: &Vec<i32>, seeked_output: i32) -> (i32, i32) {
+fn find_output (initial_state: &Vec<i128>, seeked_output: i128) -> (i128, i128) {
     for noun in 0..=99 {
         for verb in 0..=99 {
             let result = iteration(&(initial_state.to_vec()), noun, verb);
@@ -31,7 +31,7 @@ fn find_output (initial_state: &Vec<i32>, seeked_output: i32) -> (i32, i32) {
     (-1, -1)
 }
 
-fn iteration(initial_state: &Vec<i32>, noun: i32, verb: i32) -> i32 {
+fn iteration(initial_state: &Vec<i128>, noun: i128, verb: i128) -> i128 {
     let mut program = int_code::create_program(initial_state.to_vec());
     program.day_02_initialize(noun, verb);
     program.run_until_stopped();

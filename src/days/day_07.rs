@@ -23,9 +23,9 @@ impl day_tasks::DayTasks for Day07 {
 }
 
 fn amplifier_sequence(
-    initial_state: &Vec<i32>,
-    phase_setting_values: &mut [i32],
-    phase_setting_iteration: &dyn Fn(&Vec<i32>, Vec<i32>) -> i32) -> Option<i32> {
+    initial_state: &Vec<i128>,
+    phase_setting_values: &mut [i128],
+    phase_setting_iteration: &dyn Fn(&Vec<i128>, Vec<i128>) -> i128) -> Option<i128> {
     let all_possible_phase_settings = get_all_possible_phase_settings(phase_setting_values);
     all_possible_phase_settings
         .into_iter()
@@ -33,7 +33,7 @@ fn amplifier_sequence(
         .max()
 }
 
-fn iteration_1 (initial_state: &Vec<i32>, phase_setting: Vec<i32>) -> i32 {
+fn iteration_1 (initial_state: &Vec<i128>, phase_setting: Vec<i128>) -> i128 {
     let programs: &mut [int_code::IntCodeProgram] = &mut [
         int_code::create_program(initial_state.to_vec()),
         int_code::create_program(initial_state.to_vec()),
@@ -57,7 +57,7 @@ fn iteration_1 (initial_state: &Vec<i32>, phase_setting: Vec<i32>) -> i32 {
     programs.last().unwrap().get_last_output().unwrap_or(-1)
 }
 
-fn iteration_0 (initial_state: &Vec<i32>, phase_setting: Vec<i32>) -> i32 {
+fn iteration_0 (initial_state: &Vec<i128>, phase_setting: Vec<i128>) -> i128 {
     let mut i = 0;
     for phase in phase_setting {
         let mut program = int_code::create_program(initial_state.to_vec());
@@ -68,7 +68,7 @@ fn iteration_0 (initial_state: &Vec<i32>, phase_setting: Vec<i32>) -> i32 {
     i
 }
 
-fn get_all_possible_phase_settings (data: &mut [i32]) -> Vec<Vec<i32>> {
+fn get_all_possible_phase_settings (data: &mut [i128]) -> Vec<Vec<i128>> {
     let mut permutations = Vec::new();
     permutohedron::heap_recursive(data, |permutation| {
         permutations.push(permutation.to_vec())

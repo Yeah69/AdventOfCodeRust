@@ -10,14 +10,14 @@ fn main() {
     println!("My machine does \"nothing\" as fast as {:?}!", diff);
     let start = Instant::now();
     //days::day_01::Day01.run();
-    days::day_02::Day02.run();
+    //days::day_02::Day02.run();
     //days::day_03::Day03.run();
     //days::day_04::Day04.run();
-    days::day_05::Day05.run();
+    //days::day_05::Day05.run();
     //days::day_06::Day06.run();
-    days::day_07::Day07.run();
+    //days::day_07::Day07.run();
     //days::day_08::Day08.run();
-    //days::day_09::Day09.run();
+    days::day_09::Day09.run();
     //days::day_10::Day10.run();
     //days::day_11::Day11.run();
     //days::day_12::Day12.run();

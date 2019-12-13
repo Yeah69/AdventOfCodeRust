@@ -17,7 +17,7 @@ impl day_tasks::DayTasks for Day05 {
     }
 }
 
-fn iteration(initial_state: &Vec<i32>, input: i32) -> Option<i32> {
+fn iteration(initial_state: &Vec<i128>, input: i128) -> Option<i128> {
     let mut program = int_code::create_program(initial_state.to_vec());
     program.run_until_stopped();
     while program.get_status() == int_code::IntCodeProgramStatus::WaitingForInput {
