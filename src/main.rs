@@ -17,8 +17,8 @@ fn main() {
     //days::day_06::Day06.run();
     //days::day_07::Day07.run();
     //days::day_08::Day08.run();
-    days::day_09::Day09.run();
-    //days::day_10::Day10.run();
+    //days::day_09::Day09.run();
+    days::day_10::Day10.run();
     //days::day_11::Day11.run();
     //days::day_12::Day12.run();
     //days::day_13::Day13.run();

@@ -184,7 +184,6 @@ impl IntCodeProgram {
                 let operator_0 = self.fetch_operator(self.instruction_pointer + 1, mode_0);
 
                 self.output.push(operator_0);
-                println!("{}", operator_0);
                 self.instruction_pointer = self.instruction_pointer + 2;
                 
                 Some(operator_0)
