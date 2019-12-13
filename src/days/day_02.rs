@@ -32,12 +32,8 @@ fn find_output (initial_state: &Vec<i32>, seeked_output: i32) -> (i32, i32) {
 }
 
 fn iteration(initial_state: &Vec<i32>, noun: i32, verb: i32) -> i32 {
-    let mut numbers = initial_state.to_vec();
-    numbers[1] = noun;
-    numbers[2] = verb;
-    let mut current_index: i32 = 0;
-    while current_index != -1 && (current_index as usize) < numbers.len() {
-        current_index = int_code::step(&mut numbers, current_index, -1).0;
-    }
-    numbers[0]
+    let mut program = int_code::create_program(initial_state.to_vec());
+    program.day_02_initialize(noun, verb);
+    program.run_until_stopped();
+    program.day_02_result()
 }

@@ -43,8 +43,8 @@ impl day_tasks::DayTasks for Day08 {
             .chunks(25);
         for line in lines.into_iter() {
             for c in line {
-                if c == '0' { print!("{}", "█".blue()) }
-                else if c == '1' {  print!("{}", "█".white()) }
+                if c == '0' { print!("{}", "█".cyan()) }
+                else if c == '1' {  print!("{}", "█".purple()) }
             }
             println!()
         }
