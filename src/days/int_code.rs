@@ -9,7 +9,7 @@ pub struct IntCodeProgram {
     relative_base: usize
 }
 
-#[derive(Eq, PartialEq, Clone)]
+#[derive(Eq, PartialEq, Clone, Debug)]
 pub enum IntCodeProgramStatus {
     Ready,
     WaitingForInput,
