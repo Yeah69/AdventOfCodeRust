@@ -22,9 +22,9 @@ fn main() {
     //days::day_11::Day11.run();
     //days::day_12::Day12.run();
     //days::day_13::Day13.run();
-    days::day_14::Day14.run();
+    //days::day_14::Day14.run();
     //days::day_15::Day15.run();
-    //days::day_16::Day16.run();
+    days::day_16::Day16.run();
     //days::day_17::Day17.run();
     //days::day_18::Day18.run();
     //days::day_19::Day19.run();
