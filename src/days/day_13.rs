@@ -26,7 +26,6 @@ impl day_tasks::DayTasks for Day13 {
         let mut program = create_program(parse_into_int_code(input));
         program.day_13_part_two_initialize();
 
-        let mut last_known_ball_x = 0;
         let mut last_known_paddle_x = 0;
 
         let mut last_known_score = 0;
@@ -39,15 +38,14 @@ impl day_tasks::DayTasks for Day13 {
                 last_known_paddle_x = x;
             }
             if tile_id == 4 {
-                last_known_ball_x = x;
-                let next_input = if last_known_ball_x < last_known_paddle_x { -1 } else if last_known_ball_x > last_known_paddle_x { 1 } else { 0 };
+                let next_input = if x < last_known_paddle_x { -1 } else if x > last_known_paddle_x { 1 } else { 0 };
                 program.push_input(next_input);
             }
             if x == -1 && y == 0 {
                 last_known_score = tile_id;
             }
         }
-        
+
         last_known_score.to_string()
     }
 }
