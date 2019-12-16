@@ -1,5 +1,5 @@
 use crate::day_tasks;
-use super::int_code::{create_program, parse_into_int_code, IntCodeProgramStatus::Ready};
+use super::int_code::{create_program, IntCodeProgramStatus::Ready};
 
 pub struct Day13;
 
@@ -8,7 +8,7 @@ impl day_tasks::DayTasks for Day13 {
         "13".to_string()
     }
     fn task_0 (&self, input: &String) -> String {
-        let mut program = create_program(parse_into_int_code(input));
+        let mut program = create_program(input);
         
         let mut i = 0;
 
@@ -23,7 +23,7 @@ impl day_tasks::DayTasks for Day13 {
         i.to_string()
     }
     fn task_1 (&self, input: &String) -> String {
-        let mut program = create_program(parse_into_int_code(input));
+        let mut program = create_program(input);
         program.day_13_part_two_initialize();
 
         let mut last_known_paddle_x = 0;

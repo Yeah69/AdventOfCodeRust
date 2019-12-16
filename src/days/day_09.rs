@@ -16,7 +16,7 @@ impl day_tasks::DayTasks for Day09 {
 }
 
 fn task_impl (input: &String, input_number: i128) -> String {
-    let mut program = int_code::create_program(int_code::parse_into_int_code(input));
+    let mut program = int_code::create_program(input);
     program.push_input(input_number);
     program.run_until_stopped();
     program.get_last_output().map(|i| i.to_string()).unwrap_or("- Something went wrong -".to_string())

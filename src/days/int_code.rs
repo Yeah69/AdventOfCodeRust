@@ -209,9 +209,9 @@ impl IntCodeProgram {
     }
 }
 
-pub fn create_program (int_code: Vec<i128>) -> IntCodeProgram {
+pub fn create_program (text_code: &String) -> IntCodeProgram {
     IntCodeProgram { 
-        int_code: int_code, 
+        int_code: parse_into_int_code(text_code), 
         instruction_pointer: 0,
         input: VecDeque::new(),
         output: Vec::new(), 
@@ -219,6 +219,6 @@ pub fn create_program (int_code: Vec<i128>) -> IntCodeProgram {
         relative_base: 0 }
 }
 
-pub fn parse_into_int_code (input: &String) -> Vec<i128>{
-    input.split(',').map(|text_number| text_number.parse::<i128>().unwrap()).collect()
+fn parse_into_int_code (text_code: &String) -> Vec<i128>{
+    text_code.split(',').map(|text_number| text_number.parse::<i128>().unwrap()).collect()
 }

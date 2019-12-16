@@ -85,7 +85,7 @@ impl day_tasks::DayTasks for Day11 {
 }
 
 fn run_painting_robot (input: &String, first_input: i128) -> (HashSet<(i32, i32)>, HashSet<(i32, i32)>) {
-    let mut program = int_code::create_program(int_code::parse_into_int_code(input));
+    let mut program = int_code::create_program(input);
     let mut painted_positions: HashSet<(i32, i32)> = HashSet::new();
     let mut currently_white_positions: HashSet<(i32, i32)> = HashSet::new();
 
