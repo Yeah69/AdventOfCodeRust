@@ -79,6 +79,10 @@ impl IntCodeProgram {
         self.int_code[0] = 2;
     }
 
+    pub fn day_17_part_two_initialize (&mut self) {
+        self.int_code[0] = 2;
+    }
+
     fn allocate_space_if_necessary (&mut self, until_position: usize)
     {
         if until_position >= self.int_code.len() {
