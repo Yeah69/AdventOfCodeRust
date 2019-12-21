@@ -56,10 +56,6 @@ impl IntCodeProgram {
         self.output.last().map(|i| i.clone())
     }
 
-    pub fn print_all_output (&self) {
-        println!("{:?}", self.output);
-    }
-
     pub fn get_status (&self) -> IntCodeProgramStatus {
         self.status.clone()
     }
