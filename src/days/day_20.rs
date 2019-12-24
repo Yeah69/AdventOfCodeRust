@@ -28,7 +28,7 @@ fn shortest_path (
 
     while let Some(current_state) = heap.pop() {
         visited.insert(current_state.position);
-        let current_node = if let Some(node) = map.get(&current_state.position) { node } else { println!("faulty pos is {:?}", &current_state.position); panic!()};
+        let current_node = if let Some(node) = map.get(&current_state.position) { node } else { panic!() };
         if current_state.position == finish {
             return Some(current_state.distance)
         }
@@ -119,9 +119,8 @@ impl Maze {
         let mut visited: HashSet<((i32, i32), i32)> = HashSet::new();
     
         while let Some(current_state) = heap.pop() {
-            //println!("{:?}", (current_state.position, current_state.floor));
             visited.insert((current_state.position, current_state.floor));
-            let current_node = if let Some(node) = self.map.get(&current_state.position) { node } else { println!("faulty pos is {:?}", &current_state.position); panic!()};
+            let current_node = if let Some(node) = self.map.get(&current_state.position) { node } else { panic!() };
             if current_state.position == self.finish && current_state.floor == 0 {
                 return Some(current_state.distance)
             }
@@ -143,13 +142,10 @@ impl Maze {
             .map(|(pos, dist)| (pos, dist, current_floor))
             .or_else(|| {
                 if let Some((label, layer)) = self.pos_to_label_and_layer.get(&possible_label_position) {
-                    //println!("here");
                     if *layer == Layer::Inner {
-                        //println!("here");
                         Some((*self.outer_layer_to_port_position.get(label).expect("- unexpected -"), 1, current_floor + 1))
                     }
                     else if *layer == Layer::Outer && current_floor > 0 {
-                        //println!("here");
                         Some((*self.inner_layer_to_port_position.get(label).expect("- unexpected -"), 1, current_floor - 1))
                     }
                     else { None }
@@ -247,8 +243,6 @@ fn parse_1 (input: &String) -> Maze {
         }
     }
 
-    println!("{:?}", map.len());
-
     map = map 
         .iter()
         .map(|((x, y), _)| {
@@ -319,7 +313,6 @@ fn parse_1 (input: &String) -> Maze {
         }
         map.remove(&node_position);
     }
-    println!("{:?}", map.len());
 
     // remove dead ends
     let dead_end_nodes = 
@@ -368,7 +361,6 @@ fn parse_1 (input: &String) -> Maze {
         }
         map.remove(&node_position);
     }
-    println!("{:?}", map.len());
 
     Maze { 
         map: map, 
@@ -466,8 +458,6 @@ fn parse (input: &String) -> (HashMap<(i32, i32), Node>, (i32, i32), (i32, i32))
         }
     }
 
-    println!("{:?}", map.len());
-
     map = map 
         .iter()
         .map(|((x, y), _)| {
@@ -563,7 +553,6 @@ fn parse (input: &String) -> (HashMap<(i32, i32), Node>, (i32, i32), (i32, i32))
         }
         map.remove(&node_position);
     }
-    println!("{:?}", map.len());
 
     // remove dead ends
     let dead_end_nodes = 
@@ -612,7 +601,6 @@ fn parse (input: &String) -> (HashMap<(i32, i32), Node>, (i32, i32), (i32, i32))
         }
         map.remove(&node_position);
     }
-    println!("{:?}", map.len());
 
     (map, starting_position, finish_position)
 }
