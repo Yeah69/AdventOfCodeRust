@@ -18,7 +18,7 @@ impl day_tasks::DayTasks for Day22 {
     }
     fn task_0 (&self, input: &String) -> String {
         let instructions = parse(input);
-        get_position_forwards(&instructions, 2019, 10_007, 1).to_string()
+        get_position_forwards(&instructions, 2019, 10_007, 1000).to_string()
     }
     fn task_1 (&self, input: &String) -> String {
         let instructions = parse(input);
@@ -30,23 +30,25 @@ impl day_tasks::DayTasks for Day22 {
 fn get_position_backwards (instructions: &Vec<ShuffleInstruction>, seeked_position: i128, count_of_cards: i128, repetitions: i128) -> i128 {
     let mut i = 0;
     let mut position = seeked_position;
-    let mut past_positions: HashSet<i128> = HashSet::new();
-    past_positions.insert(position);
+    //let mut past_positions: HashSet<i128> = HashSet::new();
+    //past_positions.insert(position);
     //println!("{}",position);
     while i < repetitions {
+        //let prev_pos = position;
         position = do_instructions_backwards(instructions, position, count_of_cards);
-        println!("{:?}",position);
+        //println!("{:?}",prev_pos - position);
         //println!("{}",position);
-        if past_positions.contains(&position) {
+        /*if past_positions.contains(&position) {
             println!("{:?}",position);
             break;
         }
         else {
             past_positions.insert(position);
-        }
+        }*/
         i = i + 1;
+        if i % 1_000_000 == 0 { println!("{}", i) }
     };
-    println!("{:?}",past_positions);
+    //println!("{:?}",past_positions);
     position
 }
 
@@ -88,8 +90,10 @@ fn get_position_forwards (instructions: &Vec<ShuffleInstruction>, seeked_positio
     past_positions.insert(position);
     while i < repetitions {
         position = do_instructions_forwards(instructions, position, count_of_cards);
+        println!("{}",position);
         if past_positions.contains(&position) {
-            //break;
+            println!("break on {}",position);
+            break;
         }
         else {
             past_positions.insert(position);

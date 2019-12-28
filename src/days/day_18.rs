@@ -2,6 +2,7 @@ use crate::day_tasks;
 use std::collections::{HashMap, HashSet, BinaryHeap};
 use std::cmp::Ordering;
 use std::i32;
+use colored::Colorize;
 
 pub struct Day18;
 
@@ -54,6 +55,25 @@ impl Ord for PathState {
 
 impl PartialOrd for PathState {
     fn partial_cmp(&self, other: &PathState) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+#[derive(PartialEq, Eq)]
+struct PathStateDirectAcyclicGraph {
+    position: (i32, i32),
+    distance: i32,
+    last_required_door: Option<char>
+}
+
+impl Ord for PathStateDirectAcyclicGraph {
+    fn cmp(&self, other: &PathStateDirectAcyclicGraph) -> Ordering {
+        other.distance.cmp(&self.distance)
+    }
+}
+
+impl PartialOrd for PathStateDirectAcyclicGraph {
+    fn partial_cmp(&self, other: &PathStateDirectAcyclicGraph) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
@@ -160,11 +180,323 @@ impl day_tasks::DayTasks for Day18 {
     }
     fn task_0 (&self, input: &String) -> String {
         let map = parse(input);
-        determine_shortest_round_trip_3(&map).to_string()
+        determine_shortest_round_trip_4(&map).to_string()
     }
     fn task_1 (&self, input: &String) -> String {
-        "".to_string()
+        let map = parse(input);
+        determine_shortest_round_trip_6(&map).to_string()
     }
+}
+
+fn determine_shortest_round_trip_6 (whole_map: &HashMap<(i32, i32), Node>) -> i32 {
+    fn is_key (node_type: &NodeType) -> Option<char> {
+        match node_type { NodeType::Key(c) => Some(*c), _ => None }
+    }
+
+    fn shortest_path (
+        node: (i32, i32), 
+        target: (i32, i32), 
+        whole_map: &HashMap<(i32, i32), Node>) -> Option<i32> {
+        
+        let mut heap: BinaryHeap<PathState> = BinaryHeap::new();
+        heap.push(PathState { position: node, distance: 0 });
+        let mut visited: HashSet<(i32, i32)> = HashSet::new();
+    
+        while let Some(current_state) = heap.pop() {
+            visited.insert(current_state.position);
+            let current_node = if let Some(node) = whole_map.get(&current_state.position) { node } else { panic!() };
+            if current_state.position == target {
+                return Some(current_state.distance)
+            }
+            for (node_position, distance) in [current_node.up, current_node.down, current_node.left, current_node.right]
+                .iter()
+                .filter_map(|opt| *opt)
+                .filter(|(pos, _)| !visited.contains(pos)){
+                heap.push(PathState { position: node_position, distance: current_state.distance + distance });
+            };
+        }
+    
+        None
+    }
+
+    let sequence = ['w', 'j', 'q', 'd', 's', 'r', 'o', 'f', 'b', 'a', 'm'];
+
+    let keys = whole_map
+        .iter()
+        .filter_map(|(position, node)| is_key(&node.node_type).map(|c| (*position, c)))
+        .map(|(position, c)| (c, position))
+        .collect::<HashMap<char, (i32, i32)>>();
+
+    let starting_point = whole_map
+        .iter()
+        .filter(|(_, node)| node.node_type == NodeType::StartingPoint)
+        .map(|(position, _)| *position)
+        .nth(0)
+        .expect("starting point not found");
+
+    let mut current_position = starting_point;
+
+    let mut distance = - 2;
+
+    for next_c in &sequence {
+        if let Some(target_position) = keys.get(&next_c) {
+            distance = distance + shortest_path(current_position, *target_position, whole_map).expect("couldn't calculate shortest path");
+            current_position = *target_position;
+        }
+        else { panic!("key not found")}
+    } 
+
+    let sequence = ['v', 'y', 'c', 'k'];
+
+    current_position = starting_point;
+
+    distance = distance - 2;
+
+    for next_c in &sequence {
+        if let Some(target_position) = keys.get(&next_c) {
+            distance = distance + shortest_path(current_position, *target_position, whole_map).expect("couldn't calculate shortest path");
+            current_position = *target_position;
+        }
+        else { panic!("key not found")}
+    } 
+
+    let sequence = ['p', 'z', 'g', 'n',  'x'];
+
+    current_position = starting_point;
+
+    distance = distance - 2;
+
+    for next_c in &sequence {
+        if let Some(target_position) = keys.get(&next_c) {
+            distance = distance + shortest_path(current_position, *target_position, whole_map).expect("couldn't calculate shortest path");
+            current_position = *target_position;
+        }
+        else { panic!("key not found")}
+    } 
+
+    let sequence = ['i', 't', 'u', 'l',  'e', 'h'];
+
+    current_position = starting_point;
+
+    distance = distance - 2;
+
+    for next_c in &sequence {
+        if let Some(target_position) = keys.get(&next_c) {
+            distance = distance + shortest_path(current_position, *target_position, whole_map).expect("couldn't calculate shortest path");
+            current_position = *target_position;
+        }
+        else { panic!("key not found")}
+    } 
+
+    distance
+}
+
+fn determine_shortest_round_trip_5 (whole_map: &HashMap<(i32, i32), Node>) -> i32 {
+    fn is_key (node_type: &NodeType) -> Option<char> {
+        match node_type { NodeType::Key(c) => Some(*c), _ => None }
+    }
+
+    fn create_key_to_door (
+        node: (i32, i32), 
+        whole_map: &HashMap<(i32, i32), Node>) -> HashMap<char, Option<char>> {
+        
+        let mut heap: BinaryHeap<PathStateDirectAcyclicGraph> = BinaryHeap::new();
+        heap.push(PathStateDirectAcyclicGraph { position: node, distance: 0, last_required_door: None});
+        let mut visited: HashSet<(i32, i32)> = HashSet::new();
+        let mut result: HashMap<char, Option<char>> = HashMap::new();
+    
+        while let Some(current_state) = heap.pop() {
+            visited.insert(current_state.position);
+            let current_node = if let Some(node) = whole_map.get(&current_state.position) { node } else { panic!() };
+            let mut current_last_required_door = current_state.last_required_door;
+            match current_node.node_type {
+                NodeType::Door(c) => current_last_required_door = Some(c),
+                NodeType::Key(c) => { result.insert(c, current_last_required_door); },
+                _ => ()
+            }
+            for (node_position, distance) in [current_node.up, current_node.down, current_node.left, current_node.right]
+                .iter()
+                .filter_map(|opt| *opt)
+                .filter(|(pos, _)| !visited.contains(pos)){
+                heap.push(PathStateDirectAcyclicGraph { position: node_position, distance: current_state.distance + distance, last_required_door: current_last_required_door});
+            };
+        }
+    
+        result
+    }
+
+    fn create_door_to_door (
+        node: (i32, i32), 
+        whole_map: &HashMap<(i32, i32), Node>) -> HashMap<char, Option<char>> {
+        
+        let mut heap: BinaryHeap<PathStateDirectAcyclicGraph> = BinaryHeap::new();
+        heap.push(PathStateDirectAcyclicGraph { position: node, distance: 0, last_required_door: None});
+        let mut visited: HashSet<(i32, i32)> = HashSet::new();
+        let mut result: HashMap<char, Option<char>> = HashMap::new();
+    
+        while let Some(current_state) = heap.pop() {
+            visited.insert(current_state.position);
+            let current_node = if let Some(node) = whole_map.get(&current_state.position) { node } else { panic!() };
+            let mut current_last_required_door = current_state.last_required_door;
+            match current_node.node_type {
+                NodeType::Door(c) => { result.insert(c, current_last_required_door); current_last_required_door = Some(c);  },
+                _ => ()
+            }
+            for (node_position, distance) in [current_node.up, current_node.down, current_node.left, current_node.right]
+                .iter()
+                .filter_map(|opt| *opt)
+                .filter(|(pos, _)| !visited.contains(pos)){
+                heap.push(PathStateDirectAcyclicGraph { position: node_position, distance: current_state.distance + distance, last_required_door: current_last_required_door});
+            };
+        }
+    
+        result
+    }
+
+    fn get_count_of_topological_sortings (available_keys: &mut HashSet<char>, last_key: Option<char>, key_to_door: &HashMap<char, Option<char>>, door_to_door: &HashMap<char, Option<char>>) -> i128 {
+        if let Some(c) = last_key {
+            available_keys.insert(c);
+        }
+        if available_keys.len() == 16 {
+            available_keys.remove(&last_key.expect("impossibroh"));
+            1
+        }
+        else {
+            let mut count = 0;
+
+            for c in (('a' as u8)..=('p' as u8)).map(|i| i as char) {
+                let temp = key_to_door.get(&c).expect("not found in key to door");
+                if !available_keys.contains(&c) && (temp.is_none() || available_keys.contains(&temp.expect("not found in available_keys"))) {
+                    count = count + get_count_of_topological_sortings(available_keys, Some(c), key_to_door, door_to_door);
+                }
+            }
+
+            if let Some(c) = last_key {
+                available_keys.remove(&c);
+            }
+            count
+        }
+    }
+
+    fn shortest_path (
+        node: (i32, i32), 
+        target: (i32, i32), 
+        whole_map: &HashMap<(i32, i32), Node>) -> Option<i32> {
+        
+        let mut heap: BinaryHeap<PathState> = BinaryHeap::new();
+        heap.push(PathState { position: node, distance: 0 });
+        let mut visited: HashSet<(i32, i32)> = HashSet::new();
+    
+        while let Some(current_state) = heap.pop() {
+            visited.insert(current_state.position);
+            let current_node = if let Some(node) = whole_map.get(&current_state.position) { node } else { panic!() };
+            if current_state.position == target {
+                return Some(current_state.distance)
+            }
+            for (node_position, distance) in [current_node.up, current_node.down, current_node.left, current_node.right]
+                .iter()
+                .filter_map(|opt| *opt)
+                .filter(|(pos, _)| !visited.contains(pos)){
+                heap.push(PathState { position: node_position, distance: current_state.distance + distance });
+            };
+        }
+    
+        None
+    }
+
+    let sequence = ['a', 'g', 'd', 'h',  'b', 'j', 'f', 'o', 'c', 'i', 'e', 'p', 'k', 'n', 'l', 'm'];
+
+    let keys = whole_map
+        .iter()
+        .filter_map(|(position, node)| is_key(&node.node_type).map(|c| (*position, c)))
+        .map(|(position, c)| (c, position))
+        .collect::<HashMap<char, (i32, i32)>>();
+
+    let mut current_position: (i32, i32) = whole_map
+        .iter()
+        .filter(|(_, node)| node.node_type == NodeType::StartingPoint)
+        .map(|(position, _)| *position)
+        .nth(0)
+        .expect("starting point not found");
+
+    let key_to_door = create_key_to_door(current_position, whole_map);
+
+    let door_to_door = create_door_to_door(current_position, whole_map);
+
+    println!("Key to Door: {:?}", key_to_door);
+    println!("Door to Door: {:?}", door_to_door);
+    println!("Topological Sorting: {}", get_count_of_topological_sortings(&mut HashSet::new(), None, &key_to_door, &door_to_door));
+
+    let mut distance = 0;
+
+    for next_c in &sequence {
+        if let Some(target_position) = keys.get(&next_c) {
+            distance = distance + shortest_path(current_position, *target_position, whole_map).expect("couldn't calculate shortest path");
+            current_position = *target_position;
+        }
+        else { panic!("key not found")}
+    } 
+
+    distance
+}
+
+fn determine_shortest_round_trip_4 (whole_map: &HashMap<(i32, i32), Node>) -> i32 {
+    fn is_key (node_type: &NodeType) -> Option<char> {
+        match node_type { NodeType::Key(c) => Some(*c), _ => None }
+    }
+
+    fn shortest_path (
+        node: (i32, i32), 
+        target: (i32, i32), 
+        whole_map: &HashMap<(i32, i32), Node>) -> Option<i32> {
+        
+        let mut heap: BinaryHeap<PathState> = BinaryHeap::new();
+        heap.push(PathState { position: node, distance: 0 });
+        let mut visited: HashSet<(i32, i32)> = HashSet::new();
+    
+        while let Some(current_state) = heap.pop() {
+            visited.insert(current_state.position);
+            let current_node = if let Some(node) = whole_map.get(&current_state.position) { node } else { panic!() };
+            if current_state.position == target {
+                return Some(current_state.distance)
+            }
+            for (node_position, distance) in [current_node.up, current_node.down, current_node.left, current_node.right]
+                .iter()
+                .filter_map(|opt| *opt)
+                .filter(|(pos, _)| !visited.contains(pos)){
+                heap.push(PathState { position: node_position, distance: current_state.distance + distance });
+            };
+        }
+    
+        None
+    }
+
+    let sequence = ['w', 'i', 'v', 'y',  'j', 'q', 'd', 's', 'r', 'o', 't', 'u', 'l', 'e', 'p', 'z', 'g', 'n', 'x', 'f', 'b', 'h', 'c', 'k', 'a', 'm'];
+
+    let keys = whole_map
+        .iter()
+        .filter_map(|(position, node)| is_key(&node.node_type).map(|c| (*position, c)))
+        .map(|(position, c)| (c, position))
+        .collect::<HashMap<char, (i32, i32)>>();
+
+    let mut current_position: (i32, i32) = whole_map
+        .iter()
+        .filter(|(_, node)| node.node_type == NodeType::StartingPoint)
+        .map(|(position, _)| *position)
+        .nth(0)
+        .expect("starting point not found");
+
+    let mut distance = 0;
+
+    for next_c in &sequence {
+        if let Some(target_position) = keys.get(&next_c) {
+            distance = distance + shortest_path(current_position, *target_position, whole_map).expect("couldn't calculate shortest path");
+            current_position = *target_position;
+        }
+        else { panic!("key not found")}
+    } 
+
+    distance
 }
 
 fn determine_shortest_round_trip_3 (whole_map: &HashMap<(i32, i32), Node>) -> i32 {
@@ -634,8 +966,6 @@ fn parse (input: &String) -> HashMap<(i32, i32), Node> {
         })
         .collect::<HashMap<(i32, i32), Node>>();
 
-    println!("{:?}", map.len());
-
     map = map
         .iter()
         .map(|((x, y), node)| {
@@ -707,7 +1037,6 @@ fn parse (input: &String) -> HashMap<(i32, i32), Node> {
         }
         map.remove(&node_position);
     }
-    println!("{:?}", map.len());
 
     // remove dead ends
     let dead_end_nodes = 
@@ -756,7 +1085,6 @@ fn parse (input: &String) -> HashMap<(i32, i32), Node> {
         }
         map.remove(&node_position);
     }
-    println!("{:?}", map.len());
 
     map
 }
