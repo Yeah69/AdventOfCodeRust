@@ -24,3 +24,4 @@ pub mod day_23;
 pub mod day_24;
 pub mod day_25;
 pub mod int_code;
+pub mod ascii_code;
