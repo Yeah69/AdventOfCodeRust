@@ -14,11 +14,12 @@ enum ShuffleInstruction {
 
 impl day_tasks::DayTasks for Day22 {
     fn day_number (&self) -> String {
-        "22".to_string()
+        "22_0".to_string()
     }
     fn task_0 (&self, input: &String) -> String {
         let instructions = parse(input);
-        get_position_forwards(&instructions, 2019, 10_007, 1000).to_string()
+        get_position_forwards(&instructions, 3, 10, 1).to_string()
+        //get_position_forwards(&instructions, 2019, 10_007, 1).to_string()
     }
     fn task_1 (&self, input: &String) -> String {
         let instructions = parse(input);
@@ -105,11 +106,18 @@ fn get_position_forwards (instructions: &Vec<ShuffleInstruction>, seeked_positio
 
 fn do_instructions_forwards (instructions: &Vec<ShuffleInstruction>, seeked_position: i128, count_of_cards: i128) -> i128 {
     let mut position = seeked_position;
+    let mut is_inverse = false;
+    let mut cut = 0;
     for instruction in instructions {
         position = match instruction {
-            ShuffleInstruction::DealIntoNewStack => count_of_cards - 1 - position,
+            ShuffleInstruction::DealIntoNewStack => { 
+                is_inverse = !is_inverse;
+                //count_of_cards - 1 - position 
+                position
+            },
             ShuffleInstruction::Cut(count) => {
-                let count = *count;
+                cut = cut + (if is_inverse { count_of_cards - 1 - *count  } else { *count });
+                /*let count = *count;
                 if count >= 0 { 
                     if count < position { position - count } 
                     else { count_of_cards + position - count } 
@@ -117,12 +125,23 @@ fn do_instructions_forwards (instructions: &Vec<ShuffleInstruction>, seeked_posi
                 else { 
                     if position < count_of_cards + count - 1 { (position - count) % count_of_cards }
                     else { position - (count_of_cards + count) } 
-                } 
+                }*/
+                position
             }
             ShuffleInstruction::DealWithIncrement(count) => (position * count) % count_of_cards 
         };
     }
-    position
+    cut = cut % count_of_cards;
+    println!("{}", cut);
+    position = if cut >= 0 { 
+        if cut < position { position - cut } 
+        else { count_of_cards + position - cut } 
+    }
+    else { 
+        if position < count_of_cards + cut - 1 { (position - cut) % count_of_cards }
+        else { position - (count_of_cards + cut) } 
+    };
+    if is_inverse { count_of_cards - 1 - position } else { position }
 }
 
 fn parse (input: &String) -> Vec<ShuffleInstruction> {

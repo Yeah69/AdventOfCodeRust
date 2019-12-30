@@ -83,44 +83,7 @@ impl IntCodeProgram {
         self.int_code[0] = 2;
     }
 
-    fn allocate_space_if_necessary (&mut self, until_position: usize)
-    {
-        if until_position >= self.int_code.len() {
-            for _ in self.int_code.len()..=until_position {
-                self.int_code.push(0);
-            }
-        }
-    }
-
-    fn get_int_code(&mut self, position: usize) -> i128 {
-        self.allocate_space_if_necessary(position);
-        self.int_code[position]
-    }
-
-    fn set_int_code(&mut self, position: usize, value: i128) {
-        self.allocate_space_if_necessary(position);
-        self.int_code[position] = value;
-    }
-
-    fn fetch_operator (&mut self, initial_position: usize, parameter_mode: ParameterMode) -> i128 {
-        let operator = self.get_int_code(initial_position);
-        match parameter_mode {
-            ParameterMode::Position => self.get_int_code(operator as usize),
-            ParameterMode::Immediate => operator,
-            ParameterMode::Relative => self.get_int_code(operator as usize + self.relative_base)
-        }
-    }
-
-    fn get_parameter_position (&mut self, initial_position: usize, parameter_mode: ParameterMode) -> usize {
-        let operator = self.get_int_code(initial_position);
-        match parameter_mode {
-            ParameterMode::Position => operator as usize,
-            ParameterMode::Relative => operator as usize + self.relative_base,
-            _ => operator as usize
-        }
-    }
-
-    fn step (&mut self) -> Option<i128> {
+    pub fn step (&mut self) -> Option<i128> {
         
 
         fn parse_op_code (op_code: i128) -> (Instruction, ParameterMode, ParameterMode, ParameterMode) {
@@ -209,6 +172,43 @@ impl IntCodeProgram {
                 self.instruction_pointer = self.int_code.len();
                 None
             }
+        }
+    }
+
+    fn allocate_space_if_necessary (&mut self, until_position: usize)
+    {
+        if until_position >= self.int_code.len() {
+            for _ in self.int_code.len()..=until_position {
+                self.int_code.push(0);
+            }
+        }
+    }
+
+    fn get_int_code(&mut self, position: usize) -> i128 {
+        self.allocate_space_if_necessary(position);
+        self.int_code[position]
+    }
+
+    fn set_int_code(&mut self, position: usize, value: i128) {
+        self.allocate_space_if_necessary(position);
+        self.int_code[position] = value;
+    }
+
+    fn fetch_operator (&mut self, initial_position: usize, parameter_mode: ParameterMode) -> i128 {
+        let operator = self.get_int_code(initial_position);
+        match parameter_mode {
+            ParameterMode::Position => self.get_int_code(operator as usize),
+            ParameterMode::Immediate => operator,
+            ParameterMode::Relative => self.get_int_code(operator as usize + self.relative_base)
+        }
+    }
+
+    fn get_parameter_position (&mut self, initial_position: usize, parameter_mode: ParameterMode) -> usize {
+        let operator = self.get_int_code(initial_position);
+        match parameter_mode {
+            ParameterMode::Position => operator as usize,
+            ParameterMode::Relative => operator as usize + self.relative_base,
+            _ => operator as usize
         }
     }
 }

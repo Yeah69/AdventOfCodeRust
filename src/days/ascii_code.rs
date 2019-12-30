@@ -7,6 +7,7 @@ pub struct AsciiCodeProgram {
 
 impl AsciiCodeProgram {
     pub fn run_script (&mut self, script: &String) {
+        println!("{}", script);
         for c in script.chars() {
             self.int_code_program.push_input(c as i128)
         }
@@ -36,7 +37,6 @@ impl AsciiCodeProgram {
                     }
                 },
                 int_code::IntCodeProgramStatus::Halt => {
-                    println!("Program halted!");
                     break;
                 },
                 _ => ()
