@@ -32,8 +32,8 @@ fn main() {
     //days::day_21::Day21.run();
     //days::day_22::Day22.run();
     //days::day_23::Day23.run();
-    days::day_24::Day24.run();
-    //days::day_25::Day25.run();
+    //days::day_24::Day24.run();
+    days::day_25::Day25.run();
     let finish = Instant::now();
     let diff = finish - start;
     println!("The whole run took in total {:?}!", diff);
