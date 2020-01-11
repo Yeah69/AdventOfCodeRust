@@ -1,7 +1,6 @@
 use crate::day_tasks;
 use super::ascii_code;
 use std::collections::HashSet;
-use std::io;
 
 pub struct Day25;
 
@@ -39,8 +38,6 @@ fn brute_force_weight_check (program: &mut ascii_code::AsciiCodeProgram, items: 
     let items_vec: Vec<String> = items.iter().map(|s| s.to_string()).collect();
     for item in items_vec {
         program.push_script_as_input(&format!("drop {}\nwest\n", item));
-        //let mut input = String::new();
-        //io::stdin().read_line(&mut input);
         items.remove(&item);
         brute_force_weight_check(program, items);
         program.push_script_as_input(&format!("take {}\n", item));
