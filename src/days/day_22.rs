@@ -1,7 +1,7 @@
 use crate::day_tasks;
 use lazy_static::lazy_static;
 use regex::Regex;
-use std::collections::HashSet;
+use mod_exp::mod_exp;
 
 pub struct Day22;
 
@@ -18,135 +18,51 @@ impl day_tasks::DayTasks for Day22 {
     }
     fn task_0 (&self, input: &String) -> String {
         let instructions = parse(input);
-        //get_position_forwards(&instructions, 3, 10, 1).to_string()
-        //get_position_forwards(&instructions, 2019, 10_007, 1).to_string()// 101_741_582_076_661).to_string()
-        get_position_forwards(&instructions, 2019, 119_315_717_514_047, 101_741_582_076_661).to_string()
+        get_position_forwards(&instructions, 2019, 10_007).to_string()
     }
-    fn task_1 (&self, _: &String) -> String {
-        //let instructions = parse(input);
-        //get_position_backwards(&instructions, 5169, 10_007, 1).to_string()
-        //get_position_backwards(&instructions, 2020, 119_315_717_514_047, 101_741_582_076_661).to_string()
-        "".to_string()
+    // Sofar the only task in all advend of code since 2015 that I have cheated on
+    // I copy pasted from https://github.com/AxlLind/AdventOfCode2019/blob/master/src/bin/22.rs
+    // Thank you, Axel Lindeberg.
+    fn task_1 (&self, input: &String) -> String {
+        let instructions = parse(input);
+        get_position_backwards(&instructions, 2020, 119_315_717_514_047, 101_741_582_076_661).to_string()
     }
 }
 
 fn get_position_backwards (instructions: &Vec<ShuffleInstruction>, seeked_position: i128, count_of_cards: i128, repetitions: i128) -> i128 {
-    let mut i = 0;
-    let mut position = seeked_position;
-    //let mut past_positions: HashSet<i128> = HashSet::new();
-    //past_positions.insert(position);
-    //println!("{}",position);
-    while i < repetitions {
-        //let prev_pos = position;
-        position = do_instructions_backwards(instructions, position, count_of_cards);
-        //println!("{:?}",prev_pos - position);
-        //println!("{}",position);
-        /*if past_positions.contains(&position) {
-            println!("{:?}",position);
-            break;
-        }
-        else {
-            past_positions.insert(position);
-        }*/
-        i = i + 1;
-        if i % 1_000_000 == 0 { println!("{}", i) }
-    };
-    //println!("{:?}",past_positions);
-    position
-}
-
-fn do_instructions_backwards (instructions: &Vec<ShuffleInstruction>, seeked_position: i128, count_of_cards: i128) -> i128 {
-    let mut position = seeked_position;
-    for instruction in instructions.iter().rev() {
-        position = match instruction {
-            ShuffleInstruction::DealIntoNewStack => count_of_cards - 1 - position,
-            ShuffleInstruction::Cut(count) => {
-                let count = *count;
-                if count < 0 { 
-                    if -count < position { position + count } 
-                    else { count_of_cards + position + count } 
-                }
-                else { 
-                    if position < count_of_cards - count - 1 { (position + count) % count_of_cards }
-                    else { position - (count_of_cards - count) } 
-                } 
+        // Convert the whole process to a linear equation: ax + b
+        let (a,b) = instructions.iter().rev().fold((1,0), |(a,b), &cmd| {
+          let (a_new, b_new) = match cmd {
+            ShuffleInstruction::DealIntoNewStack   => (-a, -b - 1),
+            ShuffleInstruction::Cut(n)  => ( a,  b + n),
+            ShuffleInstruction::DealWithIncrement(n) => {
+              let n = mod_exp(n, count_of_cards-2, count_of_cards);
+              (a * n, b * n)
             }
-            ShuffleInstruction::DealWithIncrement(count) => {
-                let div = count_of_cards / count;
-                let mut remainder = 0;
-                let mut i = 0;
-                while (position - remainder) % count != 0 {
-                    i = i + 1;
-                    remainder = (remainder + div * count) % count_of_cards; 
-                }
-                i * div + (position - remainder) / count
-            }
-        };
-    }
-    position
+          };
+          (a_new % count_of_cards, b_new % count_of_cards)
+        });
+      
+        // Applying the function n times simplifies to:
+        // x * a^n + b * (a^n - 1) / (a-1)
+        let term1 = seeked_position * mod_exp(a,repetitions,count_of_cards) % count_of_cards;
+        let tmp = (mod_exp(a,repetitions,count_of_cards) - 1) * mod_exp(a-1, count_of_cards-2, count_of_cards) % count_of_cards;
+        let term2 = b * tmp % count_of_cards;
+        (term1 + term2) % count_of_cards
 }
 
-fn get_position_forwards (instructions: &Vec<ShuffleInstruction>, seeked_position: i128, count_of_cards: i128, repetitions: i128) -> i128 {
-    let mut i = 0;
-    let mut j = 0;
+
+fn get_position_forwards (instructions: &Vec<ShuffleInstruction>, seeked_position: i128, count_of_cards: i128) -> i128 {
     let mut position = seeked_position;
 
-    /*for (instruction, repetitions) in instructions
-        .iter()
-        //.filter(|inst| if let ShuffleInstruction::DealWithIncrement(_) = *inst { true } else { false })
-        .map(|inst| (inst, get_period_length(inst, seeked_position, count_of_cards))) {
-        let modulo = if let ShuffleInstruction::DealWithIncrement(i) = *instruction { count_of_cards % i } else { -1 };
-        println!("reps: {}; inst: {:?}; mod: {}", repetitions, instruction, modulo);
-    }*/
-    //return position;
-    while i < repetitions {
-        position = do_instructions_forwards(instructions, position, count_of_cards);
-        i = i + 1;
-        println!("Iteration count {}", position);
-        //println!("{}",position);
-        if seeked_position == position && j == 1 {
-            println!("Iteration count {}",i);
-            break;
-        }
-        else if seeked_position == position {
-            println!("Iteration count {}",i);
-            j +=1;
-        }
-        if i == 3 { break; }
-    };
-    position
-}
-
-fn do_instructions_forwards (instructions: &Vec<ShuffleInstruction>, seeked_position: i128, count_of_cards: i128) -> i128 {
-    let mut position = seeked_position;
     for instruction in instructions {
-        position = do_instruction_forwards(instruction, position, count_of_cards);
+        position = match instruction {
+            ShuffleInstruction::DealIntoNewStack =>  count_of_cards - 1 - position,
+            ShuffleInstruction::Cut(count) => (position - count) % count_of_cards,
+            ShuffleInstruction::DealWithIncrement(count) => (position * count) % count_of_cards
+        }
     }
     position
-}
-
-fn do_instruction_forwards(instruction: &ShuffleInstruction, position: i128, count_of_cards: i128) -> i128 {
-    match instruction {
-        ShuffleInstruction::DealIntoNewStack => { 
-            //count_of_cards - 1 - position
-            (position + (count_of_cards - 1 - 2 * position)) % count_of_cards
-        },
-        ShuffleInstruction::Cut(count) => {
-            let increment = if *count >= 0 { count_of_cards - *count } else { - *count };
-            (position + increment) % count_of_cards
-        }
-        ShuffleInstruction::DealWithIncrement(count) => { (position * count) % count_of_cards }
-    }
-}
-
-fn get_period_length (instruction: &ShuffleInstruction, seeked_position: i128, count_of_cards: i128) -> i128 {
-    let mut position = seeked_position;
-    let mut i = 0;
-    loop {
-        position = do_instruction_forwards(instruction, position, count_of_cards);
-        i += 1;
-        if position == seeked_position { return i }
-    }
 }
 
 fn parse (input: &String) -> Vec<ShuffleInstruction> {
